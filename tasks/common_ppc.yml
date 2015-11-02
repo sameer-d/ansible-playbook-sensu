@@ -1,0 +1,42 @@
+---
+
+- name: install sensu
+  command: "{{ item }}"
+  with_items:
+    - wget ftp://{{ ftpserverpath }}sensu.deb
+    - dpkg -i sensu.deb
+
+- name: set which Ruby to use
+  lineinfile:
+    dest=/etc/default/sensu
+    regexp=^EMBEDDED_RUBY=
+    line=EMBEDDED_RUBY={{ sensu_embedded_ruby }}
+
+- name: set which user to use
+  lineinfile:
+    dest=/etc/default/sensu
+    regexp=^USER=
+    line=USER={{ sensu_user }}
+
+
+- name: create the Conf.d  directory
+  file:
+    path=/etc/sensu/conf.d
+    owner="{{ sensu_user }}"
+    group="{{ sensu_group }}"
+    mode=0750
+    state=directory
+
+
+
+- name: generate rabbitmq.json
+  template:
+    src=rabbitmq.json.j2
+    dest=/etc/sensu/conf.d/rabbitmq.json
+    owner=sensu
+    group=sensu
+    mode=0640
+    backup=yes
+  notify:
+    - restart sensu server
+    - restart sensu client
