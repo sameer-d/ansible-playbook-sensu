@@ -1,6 +1,7 @@
 ---
 - name: add the official Sensu repository's key
   apt_key: url=http://repos.sensuapp.org/apt/pubkey.gpg state=present
+  environment: 
 
 - name: add the official Sensu repository
   copy:
@@ -12,6 +13,8 @@
 - name: refresh apt cache
   apt: update_cache=yes
   when: aptrepo.changed
+  environment:
+
 
 - name: install sensu
   apt: name=sensu state=present
@@ -28,30 +31,6 @@
     regexp=^USER=
     line=USER={{ sensu_user }}
 
-- name: create the SSL directory
-  file:
-    path=/etc/sensu/ssl
-    owner="{{ sensu_user }}"
-    group="{{ sensu_group }}"
-    mode=0750
-    state=directory
-  when: not sensu_server_rabbitmq_insecure
-
-- name: copy the SSL certificate & key
-  copy:
-    src={{ sensu_cert_dir }}/{{ item }}
-    dest=/etc/sensu/ssl/{{ item }}
-    owner="{{ sensu_user }}"
-    group="{{ sensu_group }}"
-    mode=0640
-    backup=yes
-  with_items:
-    - "{{ sensu_cert_file_name }}"
-    - "{{ sensu_key_file_name }}"
-  when: not sensu_server_rabbitmq_insecure
-  notify:
-    - restart sensu server
-    - restart sensu client
 
 - name: generate rabbitmq.json
   template:
