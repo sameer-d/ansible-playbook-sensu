@@ -5,7 +5,7 @@
   when: (ansible_architecture == "x86_64")
 
 - include: common_ppc.yml
-  when: (ansible_architecture == "ppc64")
+  when: (ansible_architecture == "ppc64le")
 
 - include: server.yml
   when: sensu_install_server
