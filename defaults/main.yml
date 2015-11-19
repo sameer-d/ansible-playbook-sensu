@@ -47,6 +47,19 @@ sensu_server_dashboard_user:     "uchiwa"
 sensu_server_dashboard_password: "placeholder"
 sensu_server_dashboard_refresh:  5
 
+sensu_client_host_name: "{{ ansible_hostname }}"
+sensu_client_host_address: "{{ ansible_default_ipv4.address }}"
+sensu_client_subscriptions:
+  - test
+
+# Default client config
+sensu_client_config:
+  client:
+    name: "{{ sensu_client_host_name }}"
+    address: "{{ sensu_client_host_address }}"
+    subscriptions: "{{ sensu_client_subscriptions }}"
+
+
 sensu_checks:   []
 sensu_handlers: []
 
